@@ -15,6 +15,12 @@ namespace SlayTheSpire2.LAN.Multiplayer.Patchs.Screens
         {
             if (type == typeof(LanMultiplayerHostSubmenu))
             {
+                if (LanMultiplayerHostSubmenu.Instance != null &&
+                    !Godot.GodotObject.IsInstanceValid(LanMultiplayerHostSubmenu.Instance))
+                {
+                    LanMultiplayerHostSubmenu.ResetInstance();
+                }
+
                 if (LanMultiplayerHostSubmenu.Instance == null)
                 {
                     var lanMultiplayerHostSubmenu = LanMultiplayerHostSubmenu.Create();

@@ -19,8 +19,18 @@ namespace SlayTheSpire2.LAN.Multiplayer.Components
 
         private Control? _loadingOverlay;
 
+        public static void ResetInstance()
+        {
+            Instance = null;
+        }
+
         public new static NMultiplayerHostSubmenu? Create()
         {
+            if (Instance != null && !GodotObject.IsInstanceValid(Instance))
+            {
+                Instance = null;
+            }
+
             if (Instance != null)
                 return Instance;
 
@@ -44,6 +54,16 @@ namespace SlayTheSpire2.LAN.Multiplayer.Components
             Instance = lanMultiplayerHostSubmenu;
 
             return lanMultiplayerHostSubmenu;
+        }
+
+        public override void _ExitTree()
+        {
+            if (ReferenceEquals(Instance, this))
+            {
+                Instance = null;
+            }
+
+            base._ExitTree();
         }
 
         public override void _Ready()

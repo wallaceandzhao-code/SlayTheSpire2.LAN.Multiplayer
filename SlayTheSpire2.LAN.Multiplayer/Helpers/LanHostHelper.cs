@@ -31,17 +31,17 @@ namespace SlayTheSpire2.LAN.Multiplayer.Helpers
             try
             {
                 var netService = new NetHostGameService();
-                NetErrorInfo? netErrorInfo = null;
-                netService.StartENetHost(port, maxPlayers);
-                LanDiscoveryService.Instance.StartHostDiscovery(port, maxPlayers, gameMode switch
-                {
-                    GameMode.Standard => "标准",
-                    GameMode.Daily => "每日",
-                    _ => "自定义"
-                });
-                Log.Info($"HostGame open on port:{port}");
+                var netErrorInfo = netService.StartENetHost(port, maxPlayers);
                 if (!netErrorInfo.HasValue)
                 {
+                    LanDiscoveryService.Instance.StartHostDiscovery(port, maxPlayers, gameMode switch
+                    {
+                        GameMode.Standard => "标准",
+                        GameMode.Daily => "每日",
+                        _ => "自定义"
+                    });
+                    Log.Info($"HostGame open on port:{port}");
+
                     switch (gameMode)
                     {
                         case GameMode.Standard:
@@ -100,14 +100,14 @@ namespace SlayTheSpire2.LAN.Multiplayer.Helpers
             try
             {
                 var netService = new NetHostGameService();
-                NetErrorInfo? netErrorInfo = null;
-                netService.StartENetHost(port, maxPlayers);
-                LanDiscoveryService.Instance.StartHostDiscovery(port, maxPlayers, run.Modifiers.Count > 0
-                    ? run.DailyTime.HasValue ? "每日存档" : "自定义存档"
-                    : "标准存档");
-                Log.Info($"HostGame open on port:{port}");
+                var netErrorInfo = netService.StartENetHost(port, maxPlayers);
                 if (!netErrorInfo.HasValue)
                 {
+                    LanDiscoveryService.Instance.StartHostDiscovery(port, maxPlayers, run.Modifiers.Count > 0
+                        ? run.DailyTime.HasValue ? "每日存档" : "自定义存档"
+                        : "标准存档");
+                    Log.Info($"HostGame open on port:{port}");
+
                     if (run.Modifiers.Count > 0)
                     {
                         if (run.DailyTime.HasValue)

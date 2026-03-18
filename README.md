@@ -5,7 +5,11 @@
 Used Local network with friends to play Slay The Spire 2 multiplayer.
 
 ## How Install
-Extract the archive to get mods folder then place mods folder into the game directory.
+Extract the archive and place the mod files into the game's `mods` directory.
+
+The mod must ship with both of these files:
+- `SlayTheSpire2.LAN.Multiplayer.dll`
+- `SlayTheSpire2.LAN.Multiplayer.json`
 
 ## Screenshot
 ![Screenshot1](Screenshot/screenshot1.png)
