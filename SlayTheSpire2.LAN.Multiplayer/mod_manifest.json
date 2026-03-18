@@ -1,0 +1,12 @@
+{
+  "id": "SlayTheSpire2.LAN.Multiplayer",
+  "pck_name": "SlayTheSpire2.LAN.Multiplayer",
+  "name": "SlayTheSpire2.LAN.Multiplayer",
+  "author": "Kmyuhkyuk / Wallace Zhao",
+  "description": "Added local network multiplayer support, custom host port, auto LAN discovery, and Chinese UI text. \n为《杀戮尖塔 2》增加局域网联机、自定义主机端口、自动发现房间和中文界面文案。",
+  "version": "v1.5.0.0",
+  "has_dll": true,
+  "has_pck": false,
+  "dependencies": [],
+  "affects_gameplay": true
+}

@@ -78,4 +78,10 @@
     </ItemGroup>
   </Target>
 
+  <ItemGroup>
+    <None Update="mod_manifest.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+
 </Project>
