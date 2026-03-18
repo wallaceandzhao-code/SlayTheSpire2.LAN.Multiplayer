@@ -6,21 +6,76 @@
     <Nullable>enable</Nullable>
     <AssemblyVersion>1.5.0.0</AssemblyVersion>
     <FileVersion>1.5.0.0</FileVersion>
+    <BuildSettingsFile>$(MSBuildProjectDirectory)/build-settings.json</BuildSettingsFile>
   </PropertyGroup>
 
-  <ItemGroup>
-    <Reference Include="0Harmony">
-      <HintPath>V:\Slay.the.Spire.2\data_sts2_windows_x86_64\0Harmony.dll</HintPath>
-    </Reference>
-    <Reference Include="GodotSharp">
-      <HintPath>V:\Slay.the.Spire.2\data_sts2_windows_x86_64\GodotSharp.dll</HintPath>
-    </Reference>
-    <Reference Include="Steamworks.NET">
-      <HintPath>V:\Slay.the.Spire.2\data_sts2_windows_x86_64\Steamworks.NET.dll</HintPath>
-    </Reference>
-    <Reference Include="sts2">
-      <HintPath>V:\Slay.the.Spire.2\data_sts2_windows_x86_64\sts2.dll</HintPath>
-    </Reference>
-  </ItemGroup>
+  <!-- 从本地 JSON 配置读取游戏目录，避免把机器上的 DLL 路径写死在项目文件里。 -->
+  <UsingTask TaskName="ReadGameDataPathFromJson"
+             TaskFactory="RoslynCodeTaskFactory"
+             AssemblyFile="$(MSBuildToolsPath)/Microsoft.Build.Tasks.Core.dll">
+    <ParameterGroup>
+      <ConfigFile ParameterType="System.String" Required="true" />
+      <GameDataPath ParameterType="System.String" Output="true" />
+    </ParameterGroup>
+    <Task>
+      <Reference Include="System.Text.Json" />
+      <Code Type="Fragment" Language="cs"><![CDATA[
+        var configPath = System.IO.Path.GetFullPath(ConfigFile);
+        if (!System.IO.File.Exists(configPath))
+        {
+            Log.LogError($"缺少构建配置文件：{configPath}");
+            return false;
+        }
+
+        using var jsonDocument = System.Text.Json.JsonDocument.Parse(System.IO.File.ReadAllText(configPath));
+        if (!jsonDocument.RootElement.TryGetProperty("gameDataPath", out var gameDataPathElement))
+        {
+            Log.LogError($"构建配置文件缺少 gameDataPath：{configPath}");
+            return false;
+        }
+
+        GameDataPath = gameDataPathElement.GetString();
+        if (string.IsNullOrWhiteSpace(GameDataPath))
+        {
+            Log.LogError($"构建配置文件中的 gameDataPath 不能为空：{configPath}");
+            return false;
+        }
+
+        GameDataPath = System.IO.Path.GetFullPath(GameDataPath);
+        return true;
+      ]]></Code>
+    </Task>
+  </UsingTask>
+
+  <!-- 在解析引用前动态装配 DLL 路径，保证修改 JSON 后无需再改项目文件。 -->
+  <Target Name="LoadGameDataReferences" BeforeTargets="ResolveReferences">
+    <ReadGameDataPathFromJson ConfigFile="$(BuildSettingsFile)">
+      <Output TaskParameter="GameDataPath" PropertyName="GameDataPath" />
+    </ReadGameDataPathFromJson>
+
+    <Error Condition="!Exists($([System.IO.Path]::Combine('$(GameDataPath)', '0Harmony.dll')))"
+           Text="在 $(GameDataPath) 下找不到 0Harmony.dll，请检查 build-settings.json。" />
+    <Error Condition="!Exists($([System.IO.Path]::Combine('$(GameDataPath)', 'GodotSharp.dll')))"
+           Text="在 $(GameDataPath) 下找不到 GodotSharp.dll，请检查 build-settings.json。" />
+    <Error Condition="!Exists($([System.IO.Path]::Combine('$(GameDataPath)', 'Steamworks.NET.dll')))"
+           Text="在 $(GameDataPath) 下找不到 Steamworks.NET.dll，请检查 build-settings.json。" />
+    <Error Condition="!Exists($([System.IO.Path]::Combine('$(GameDataPath)', 'sts2.dll')))"
+           Text="在 $(GameDataPath) 下找不到 sts2.dll，请检查 build-settings.json。" />
+
+    <ItemGroup>
+      <Reference Include="0Harmony">
+        <HintPath>$([System.IO.Path]::Combine('$(GameDataPath)', '0Harmony.dll'))</HintPath>
+      </Reference>
+      <Reference Include="GodotSharp">
+        <HintPath>$([System.IO.Path]::Combine('$(GameDataPath)', 'GodotSharp.dll'))</HintPath>
+      </Reference>
+      <Reference Include="Steamworks.NET">
+        <HintPath>$([System.IO.Path]::Combine('$(GameDataPath)', 'Steamworks.NET.dll'))</HintPath>
+      </Reference>
+      <Reference Include="sts2">
+        <HintPath>$([System.IO.Path]::Combine('$(GameDataPath)', 'sts2.dll'))</HintPath>
+      </Reference>
+    </ItemGroup>
+  </Target>
 
 </Project>
