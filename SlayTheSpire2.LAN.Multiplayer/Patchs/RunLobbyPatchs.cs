@@ -72,6 +72,11 @@ namespace SlayTheSpire2.LAN.Multiplayer.Patchs
                 if (disconnectSession)
                 {
                     lanPlayerNameService.SetDefaultPlayerNames();
+
+                    if (netService.Type == NetGameType.Host)
+                    {
+                        LanDiscoveryService.Instance.StopHostDiscovery();
+                    }
                 }
 
                 netService.UnregisterMessageHandler<LanPlayerNameResponseMessage>(lanPlayerNameService
@@ -95,6 +100,11 @@ namespace SlayTheSpire2.LAN.Multiplayer.Patchs
                     var lanPlayerNameService = LanPlayerNameService.Instance;
 
                     lanPlayerNameService.SetDefaultPlayerNames();
+
+                    if (____netService.Type == NetGameType.Host)
+                    {
+                        LanDiscoveryService.Instance.StopHostDiscovery();
+                    }
 
                     ____netService.UnregisterMessageHandler<LanPlayerNameResponseMessage>(lanPlayerNameService
                         .HandleLanPlayerNameResponseMessage);

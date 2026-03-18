@@ -33,6 +33,12 @@ namespace SlayTheSpire2.LAN.Multiplayer.Helpers
                 var netService = new NetHostGameService();
                 NetErrorInfo? netErrorInfo = null;
                 netService.StartENetHost(port, maxPlayers);
+                LanDiscoveryService.Instance.StartHostDiscovery(port, maxPlayers, gameMode switch
+                {
+                    GameMode.Standard => "标准",
+                    GameMode.Daily => "每日",
+                    _ => "自定义"
+                });
                 Log.Info($"HostGame open on port:{port}");
                 if (!netErrorInfo.HasValue)
                 {
@@ -72,6 +78,7 @@ namespace SlayTheSpire2.LAN.Multiplayer.Helpers
             }
             catch
             {
+                LanDiscoveryService.Instance.StopHostDiscovery();
                 var nErrorPopup2 = NErrorPopup.Create(new NetErrorInfo(NetError.InternalError, selfInitiated: false));
                 if (nErrorPopup2 != null)
                 {
@@ -95,6 +102,9 @@ namespace SlayTheSpire2.LAN.Multiplayer.Helpers
                 var netService = new NetHostGameService();
                 NetErrorInfo? netErrorInfo = null;
                 netService.StartENetHost(port, maxPlayers);
+                LanDiscoveryService.Instance.StartHostDiscovery(port, maxPlayers, run.Modifiers.Count > 0
+                    ? run.DailyTime.HasValue ? "每日存档" : "自定义存档"
+                    : "标准存档");
                 Log.Info($"HostGame open on port:{port}");
                 if (!netErrorInfo.HasValue)
                 {
@@ -128,6 +138,11 @@ namespace SlayTheSpire2.LAN.Multiplayer.Helpers
                         NModalContainer.Instance?.Add(nErrorPopup);
                     }
                 }
+            }
+            catch
+            {
+                LanDiscoveryService.Instance.StopHostDiscovery();
+                throw;
             }
             finally
             {

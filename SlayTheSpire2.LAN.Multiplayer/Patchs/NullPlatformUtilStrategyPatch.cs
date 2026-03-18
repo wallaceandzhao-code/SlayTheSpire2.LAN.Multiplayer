@@ -32,10 +32,10 @@ namespace SlayTheSpire2.LAN.Multiplayer.Patchs
 
             __result = playerId switch
             {
-                1uL => "Test Host",
-                1000uL => "Test Client 1",
-                2000uL => "Test Client 2",
-                3000uL => "Test Client 3",
+                1uL => "测试主机",
+                1000uL => "测试客户端 1",
+                2000uL => "测试客户端 2",
+                3000uL => "测试客户端 3",
                 _ => playerId.ToString(),
             };
 

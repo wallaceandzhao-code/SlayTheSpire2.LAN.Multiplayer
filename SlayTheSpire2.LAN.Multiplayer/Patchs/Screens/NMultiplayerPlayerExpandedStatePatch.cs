@@ -39,7 +39,7 @@ namespace SlayTheSpire2.LAN.Multiplayer.Patchs.Screens
 
                     cardLibraryTickBox.SizeFlagsHorizontal = Control.SizeFlags.ShrinkCenter;
 
-                    cardLibraryTickBox.SetLabel("Disable drawing");
+                    cardLibraryTickBox.SetLabel("隐藏路线绘制");
 
                     var lanMapDrawingsService = LanMapDrawingsService.Instance;
 

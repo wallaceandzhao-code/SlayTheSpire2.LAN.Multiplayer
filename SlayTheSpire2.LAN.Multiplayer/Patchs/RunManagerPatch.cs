@@ -14,6 +14,7 @@ namespace SlayTheSpire2.LAN.Multiplayer.Patchs
         {
             LanMapDrawingsService.Instance.DisableDrawingHashSet.Clear();
             LanPlayerNameService.Instance.SetDefaultPlayerNames();
+            LanDiscoveryService.Instance.StopHostDiscovery();
         }
     }
 }

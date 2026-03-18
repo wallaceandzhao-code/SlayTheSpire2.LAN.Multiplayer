@@ -57,7 +57,7 @@ namespace SlayTheSpire2.LAN.Multiplayer.Patchs.Screens
                     SettingsService.Instance.WriteSettings();
                 };
 
-                hostPortLabel.Text = "Host Port";
+                hostPortLabel.Text = "主机端口";
             }
 
             if (__instance.GetNode("%ModdingDivider").Duplicate() is ColorRect hostMaxPlayersDivider &&
@@ -97,7 +97,7 @@ namespace SlayTheSpire2.LAN.Multiplayer.Patchs.Screens
                     SettingsService.Instance.WriteSettings();
                 };
 
-                hostMaxPlayersLabel.Text = "Host Max Players";
+                hostMaxPlayersLabel.Text = "最大玩家数";
             }
 
             if (__instance.GetNode("%ModdingDivider").Duplicate() is ColorRect playerNameDivider &&
@@ -140,7 +140,7 @@ namespace SlayTheSpire2.LAN.Multiplayer.Patchs.Screens
                     }
                 };
 
-                playerNameLabel.Text = "Player Name";
+                playerNameLabel.Text = "玩家名称";
             }
 
             if (__instance.GetNode("%ModdingDivider").Duplicate() is ColorRect netIdDivider &&
@@ -181,7 +181,7 @@ namespace SlayTheSpire2.LAN.Multiplayer.Patchs.Screens
                     SettingsService.Instance.WriteSettings();
                 };
 
-                netIdLabel.Text = "NetID";
+                netIdLabel.Text = "网络 ID";
             }
 
             if (generalSettings is NSettingsPanel nSettingsPanel)

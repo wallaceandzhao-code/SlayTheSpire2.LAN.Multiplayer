@@ -50,7 +50,7 @@ namespace SlayTheSpire2.LAN.Multiplayer.Patchs.Screens
                 }));
             lanHostButton.SetIconAndLocalization("HOST");
             var lanHostTitle = Traverse.Create(lanHostButton).Field("_title").GetValue<MegaLabel>();
-            lanHostTitle.Text = $"LAN {lanHostTitle.Text}";
+            lanHostTitle.Text = $"局域网 {lanHostTitle.Text}";
 
             NSubmenuButtonDuplicateMaterial(lanHostButton);
 
@@ -77,7 +77,7 @@ namespace SlayTheSpire2.LAN.Multiplayer.Patchs.Screens
                 }));
             lanLoadButton.SetIconAndLocalization("MP_LOAD");
             var lanLoadButtonTitle = Traverse.Create(lanLoadButton).Field("_title").GetValue<MegaLabel>();
-            lanLoadButtonTitle.Text = $"LAN {lanLoadButtonTitle.Text}";
+            lanLoadButtonTitle.Text = $"局域网 {lanLoadButtonTitle.Text}";
 
             NSubmenuButtonDuplicateMaterial(lanLoadButton);
 
@@ -99,7 +99,7 @@ namespace SlayTheSpire2.LAN.Multiplayer.Patchs.Screens
                 }));
             lanAbandonButton.SetIconAndLocalization("MP_ABANDON");
             var lanAbandonButtonTitle = Traverse.Create(lanAbandonButton).Field("_title").GetValue<MegaLabel>();
-            lanAbandonButtonTitle.Text = $"LAN {lanAbandonButtonTitle.Text}";
+            lanAbandonButtonTitle.Text = $"局域网 {lanAbandonButtonTitle.Text}";
 
             NSubmenuButtonDuplicateMaterial(lanAbandonButton);
 
