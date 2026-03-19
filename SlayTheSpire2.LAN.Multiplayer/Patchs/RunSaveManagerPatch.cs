@@ -21,30 +21,38 @@ namespace SlayTheSpire2.LAN.Multiplayer.Patchs
         private static bool Prefix(RunSaveManager __instance, AbstractRoom? preFinishedRoom, bool ____forceSynchronous,
             ISaveStore ____saveStore, Action? ___Saved, ref Task __result)
         {
-            __result = TaskHelper.RunSafely(SaveRun(__instance, preFinishedRoom, ____forceSynchronous, ____saveStore,
-                ___Saved));
+            var netService = RunManager.Instance.NetService;
+            if (netService == null)
+            {
+                return true;
+            }
+
+            // Only override save behavior for LAN host saves. Let vanilla handle every other path to avoid
+            // impacting core progression, unlocks, and settlement flows.
+            if (netService.Type != NetGameType.Host || netService.Platform != PlatformType.None)
+            {
+                return true;
+            }
+
+            __result = TaskHelper.RunSafely(SaveRun(preFinishedRoom, ____forceSynchronous, ____saveStore, ___Saved));
 
             return false;
         }
 
-        private static async Task SaveRun(RunSaveManager runSaveManager, AbstractRoom? preFinishedRoom,
-            bool forceSynchronous,
-            ISaveStore saveStore, Action? saved)
+        private static async Task SaveRun(AbstractRoom? preFinishedRoom, bool forceSynchronous, ISaveStore saveStore,
+            Action? saved)
         {
-            if (!RunManager.Instance.ShouldSave || (RunManager.Instance.NetService.Type != NetGameType.Singleplayer &&
-                                                    RunManager.Instance.NetService.Type != NetGameType.Host))
+            if (!RunManager.Instance.ShouldSave)
+            {
+                // Mirror vanilla "no active run" behavior for LAN custom save files.
+                LanRunSaveManagerService.Instance.DeleteCurrentMultiplayerRun();
+                saved?.Invoke();
                 return;
+            }
 
             var value = RunManager.Instance.ToSave(preFinishedRoom);
 
-            var isMultiplayer = RunManager.Instance.NetService.Type.IsMultiplayer();
-            var isNonePlatform = RunManager.Instance.NetService.Platform == PlatformType.None;
-
-            var savePath = isMultiplayer
-                ? isNonePlatform
-                    ? LanRunSaveManagerService.Instance.CurrentMultiplayerRunSavePath
-                    : Traverse.Create(runSaveManager).Property("CurrentMultiplayerRunSavePath").GetValue<string>()
-                : Traverse.Create(runSaveManager).Property("CurrentRunSavePath").GetValue<string>();
+            var savePath = LanRunSaveManagerService.Instance.CurrentMultiplayerRunSavePath;
             using var stream = new MemoryStream();
             if (!forceSynchronous)
             {
@@ -60,26 +68,23 @@ namespace SlayTheSpire2.LAN.Multiplayer.Patchs
             stream.Seek(0L, SeekOrigin.Begin);
             await saveStore.WriteFileAsync(savePath, stream.ToArray());
 
-            if (isMultiplayer && isNonePlatform)
+            var lanPlayerNameService = LanPlayerNameService.Instance;
+
+            using var playerNamesStream = new MemoryStream();
+            if (!forceSynchronous)
             {
-                var lanPlayerNameService = LanPlayerNameService.Instance;
-
-                using var playerNamesStream = new MemoryStream();
-                if (!forceSynchronous)
-                {
-                    await JsonSerializer.SerializeAsync(playerNamesStream, lanPlayerNameService.PlayerNames,
-                        PlayerNamesContext.Default.PlayerNames, CancellationToken.None);
-                }
-                else
-                {
-                    await JsonSerializer.SerializeAsync(playerNamesStream, lanPlayerNameService.PlayerNames,
-                        PlayerNamesContext.Default.PlayerNames);
-                }
-
-                playerNamesStream.Seek(0L, SeekOrigin.Begin);
-                await saveStore.WriteFileAsync(LanRunSaveManagerService.Instance.CurrentMultiplayerRunPlayerNamesPath,
-                    playerNamesStream.ToArray());
+                await JsonSerializer.SerializeAsync(playerNamesStream, lanPlayerNameService.PlayerNames,
+                    PlayerNamesContext.Default.PlayerNames, CancellationToken.None);
             }
+            else
+            {
+                await JsonSerializer.SerializeAsync(playerNamesStream, lanPlayerNameService.PlayerNames,
+                    PlayerNamesContext.Default.PlayerNames);
+            }
+
+            playerNamesStream.Seek(0L, SeekOrigin.Begin);
+            await saveStore.WriteFileAsync(LanRunSaveManagerService.Instance.CurrentMultiplayerRunPlayerNamesPath,
+                playerNamesStream.ToArray());
 
             saved?.Invoke();
         }
